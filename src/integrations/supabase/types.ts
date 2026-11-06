@@ -14,7 +14,125 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      bitacora: {
+        Row: {
+          contenido: string
+          created_at: string
+          fecha: string
+          id: string
+          respuestas: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          contenido?: string
+          created_at?: string
+          fecha?: string
+          id?: string
+          respuestas?: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          contenido?: string
+          created_at?: string
+          fecha?: string
+          id?: string
+          respuestas?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          id: string
+          nivel: string
+          nombre: string
+        }
+        Insert: {
+          created_at?: string
+          id: string
+          nivel?: string
+          nombre?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          nivel?: string
+          nombre?: string
+        }
+        Relationships: []
+      }
+      retos: {
+        Row: {
+          categoria: string
+          descripcion: string
+          dificultad: string
+          id: number
+          instrucciones: string
+          minutos: number
+          nombre: string
+          version_suave: string
+        }
+        Insert: {
+          categoria: string
+          descripcion: string
+          dificultad: string
+          id?: number
+          instrucciones: string
+          minutos: number
+          nombre: string
+          version_suave: string
+        }
+        Update: {
+          categoria?: string
+          descripcion?: string
+          dificultad?: string
+          id?: number
+          instrucciones?: string
+          minutos?: number
+          nombre?: string
+          version_suave?: string
+        }
+        Relationships: []
+      }
+      retos_completados: {
+        Row: {
+          created_at: string
+          fecha: string
+          id: string
+          reto_id: number
+          user_id: string
+          version_suave: boolean
+        }
+        Insert: {
+          created_at?: string
+          fecha: string
+          id?: string
+          reto_id: number
+          user_id: string
+          version_suave?: boolean
+        }
+        Update: {
+          created_at?: string
+          fecha?: string
+          id?: string
+          reto_id?: number
+          user_id?: string
+          version_suave?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "retos_completados_reto_id_fkey"
+            columns: ["reto_id"]
+            isOneToOne: false
+            referencedRelation: "retos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

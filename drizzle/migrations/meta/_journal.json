@@ -1,5 +1,13 @@
 {
   "version": "7",
   "dialect": "postgresql",
-  "entries": []
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1793945923457,
+      "tag": "0000_play_gym_schema",
+      "breakpoints": true
+    }
+  ]
 }
