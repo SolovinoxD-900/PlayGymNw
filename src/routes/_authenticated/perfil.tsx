@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { FotoPerfil } from "@/components/FotoPerfil";
 import { usePerfil, useResumen, useUser } from "@/lib/data";
 
 export const Route = createFileRoute("/_authenticated/perfil")({
@@ -72,7 +73,7 @@ function Perfil() {
     <div className="space-y-6">
       <PageHeader title="Mi perfil" />
       <div className="card-soft flex items-center gap-4 bg-hero p-6">
-        <div className="grid h-16 w-16 place-items-center rounded-full bg-gradient-primary font-display text-2xl font-bold text-primary-foreground">{inicial}</div>
+        <FotoPerfil userId={user.data!.id} inicial={inicial} />
         <div>
           <p className="text-xl font-bold">{perfil.data?.nombre}</p>
           <p className="text-sm text-muted-foreground">{user.data?.email}</p>
