@@ -99,17 +99,46 @@ export function useResumen() {
 
 export function useCompletarReto() {
   const qc = useQueryClient();
+
   return useMutation({
-    mutationFn: async ({ retoId, suave }: { retoId: number; suave: boolean }) => {
+    mutationFn: async ({
+      retoId,
+      suave,
+      evidenciaPath,
+    }: {
+      retoId: number;
+      suave: boolean;
+      evidenciaPath: string;
+    }) => {
+      if (!evidenciaPath?.trim()) {
+        throw new Error("Debes adjuntar una fotografía de evidencia.");
+      }
+
       const user_id = await uid();
+
       const { error } = await supabase
         .from("retos_completados")
-        .insert({ user_id, reto_id: retoId, fecha: fechaLocal(), version_suave: suave });
+        .insert({
+          user_id,
+          reto_id: retoId,
+          fecha: fechaLocal(),
+          version_suave: suave,
+          evidencia_path: evidenciaPath,
+        });
+
       if (error) {
-        if (error.code === "23505") throw new Error("Ya completaste el reto de hoy.");
+        if (error.code === "23505") {
+          throw new Error("Ya completaste el reto de hoy.");
+        }
         throw error;
       }
     },
+
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["completados"] }),
+    onError: (e: Error) => toast.error(e.message),
+  });
+}
+
     onSuccess: () => qc.invalidateQueries({ queryKey: ["completados"] }),
     onError: (e: Error) => toast.error(e.message),
   });
