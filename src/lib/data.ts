@@ -13,7 +13,15 @@ export type Reto = {
   categoria: string;
   version_suave: string;
 };
-export type Completado = { id: string; reto_id: number; fecha: string; version_suave: boolean; created_at: string };
+
+export type Completado = {
+  id: string;
+  reto_id: number;
+  fecha: string;
+  version_suave: boolean;
+  created_at: string;
+};
+
 export type Entrada = {
   id: string;
   fecha: string;
@@ -41,7 +49,12 @@ export function usePerfil() {
     queryKey: ["perfil"],
     queryFn: async () => {
       const id = await uid();
-      const { data, error } = await supabase.from("profiles").select("*").eq("id", id).maybeSingle();
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", id)
+        .maybeSingle();
+
       if (error) throw error;
       return data;
     },
@@ -64,10 +77,14 @@ export function useCompletados() {
   return useQuery({
     queryKey: ["completados"],
     queryFn: async () => {
+      const id = await uid();
+
       const { data, error } = await supabase
         .from("retos_completados")
         .select("id, reto_id, fecha, version_suave, created_at")
+        .eq("user_id", id)
         .order("fecha", { ascending: false });
+
       if (error) throw error;
       return data as Completado[];
     },
@@ -84,6 +101,7 @@ export function useResumen() {
   const hoy = fechaLocal();
   const lista = comp.data ?? [];
   const rachas = calcularRachas(lista.map((c) => c.fecha), hoy);
+
   return {
     loading: retos.isLoading || comp.isLoading,
     error: retos.error || comp.error,
@@ -116,15 +134,13 @@ export function useCompletarReto() {
 
       const user_id = await uid();
 
-      const { error } = await supabase
-        .from("retos_completados")
-        .insert({
-          user_id,
-          reto_id: retoId,
-          fecha: fechaLocal(),
-          version_suave: suave,
-          evidencia_path: evidenciaPath,
-        });
+      const { error } = await supabase.from("retos_completados").insert({
+        user_id,
+        reto_id: retoId,
+        fecha: fechaLocal(),
+        version_suave: suave,
+        evidencia_path: evidenciaPath,
+      });
 
       if (error) {
         if (error.code === "23505") {
@@ -134,13 +150,12 @@ export function useCompletarReto() {
       }
     },
 
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["completados"] }),
-    onError: (e: Error) => toast.error(e.message),
-  });
-}
-
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["completados"] }),
-    onError: (e: Error) => toast.error(e.message),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["completados"] });
+    },
+    onError: (e: Error) => {
+      toast.error(e.message);
+    },
   });
 }
 
@@ -148,11 +163,15 @@ export function useBitacora() {
   return useQuery({
     queryKey: ["bitacora"],
     queryFn: async () => {
+      const id = await uid();
+
       const { data, error } = await supabase
         .from("bitacora")
         .select("*")
+        .eq("user_id", id)
         .order("fecha", { ascending: false })
         .order("created_at", { ascending: false });
+
       if (error) throw error;
       return data as unknown as Entrada[];
     },
@@ -161,42 +180,75 @@ export function useBitacora() {
 
 export function useGuardarEntrada() {
   const qc = useQueryClient();
+
   return useMutation({
-    mutationFn: async (e: { id?: string | undefined; contenido: string; respuestas: Record<string, string> }) => {
+    mutationFn: async (e: {
+      id?: string | undefined;
+      contenido: string;
+      respuestas: Record<string, string>;
+    }) => {
+      const user_id = await uid();
+
       if (e.id) {
         const { error } = await supabase
           .from("bitacora")
-          .update({ contenido: e.contenido, respuestas: e.respuestas, updated_at: new Date().toISOString() })
-          .eq("id", e.id);
+          .update({
+            contenido: e.contenido,
+            respuestas: e.respuestas,
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", e.id)
+          .eq("user_id", user_id);
+
         if (error) throw error;
-      } else {
-        const user_id = await uid();
-        const { error } = await supabase
-          .from("bitacora")
-          .insert({ user_id, fecha: fechaLocal(), contenido: e.contenido, respuestas: e.respuestas });
-        if (error) throw error;
+        return;
       }
+
+      const { error } = await supabase.from("bitacora").insert({
+        user_id,
+        fecha: fechaLocal(),
+        contenido: e.contenido,
+        respuestas: e.respuestas,
+      });
+
+      if (error) throw error;
     },
+
     onSuccess: (_d, v) => {
       qc.invalidateQueries({ queryKey: ["bitacora"] });
       toast.success(v.id ? "Entrada actualizada" : "Entrada guardada 💗");
     },
-    onError: (e: Error) => toast.error(e.message),
+
+    onError: (e: Error) => {
+      toast.error(e.message);
+    },
   });
 }
 
 export function useEliminarEntrada() {
   const qc = useQueryClient();
+
   return useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("bitacora").delete().eq("id", id);
+      const user_id = await uid();
+
+      const { error } = await supabase
+        .from("bitacora")
+        .delete()
+        .eq("id", id)
+        .eq("user_id", user_id);
+
       if (error) throw error;
     },
+
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["bitacora"] });
       toast.success("Entrada eliminada");
     },
-    onError: (e: Error) => toast.error(e.message),
+
+    onError: (e: Error) => {
+      toast.error(e.message);
+    },
   });
 }
 
