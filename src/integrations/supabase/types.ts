@@ -23,6 +23,7 @@ export type Database = {
           respuestas: Json
           updated_at: string
           user_id: string
+evidencia_path: string | null
         }
         Insert: {
           contenido?: string
@@ -32,6 +33,7 @@ export type Database = {
           respuestas?: Json
           updated_at?: string
           user_id: string
+evidencia_path?: string | null
         }
         Update: {
           contenido?: string
@@ -41,6 +43,7 @@ export type Database = {
           respuestas?: Json
           updated_at?: string
           user_id?: string
+evidencia_path?: string | null
         }
         Relationships: []
       }
@@ -50,18 +53,21 @@ export type Database = {
           id: string
           nivel: string
           nombre: string
+evidencia_path: string | null
         }
         Insert: {
           created_at?: string
           id: string
           nivel?: string
           nombre?: string
+evidencia_path?: string | null
         }
         Update: {
           created_at?: string
           id?: string
           nivel?: string
           nombre?: string
+evidencia_path?: string | null
         }
         Relationships: []
       }
@@ -75,6 +81,7 @@ export type Database = {
           minutos: number
           nombre: string
           version_suave: string
+evidencia_path: string | null
         }
         Insert: {
           categoria: string
@@ -85,6 +92,7 @@ export type Database = {
           minutos: number
           nombre: string
           version_suave: string
+evidencia_path?: string | null
         }
         Update: {
           categoria?: string
@@ -95,6 +103,7 @@ export type Database = {
           minutos?: number
           nombre?: string
           version_suave?: string
+evidencia_path?: string | null
         }
         Relationships: []
       }
@@ -106,6 +115,7 @@ export type Database = {
           reto_id: number
           user_id: string
           version_suave: boolean
+evidencia_path: string | null
         }
         Insert: {
           created_at?: string
@@ -114,6 +124,7 @@ export type Database = {
           reto_id: number
           user_id: string
           version_suave?: boolean
+evidencia_path?: string | null
         }
         Update: {
           created_at?: string
@@ -122,6 +133,7 @@ export type Database = {
           reto_id?: number
           user_id?: string
           version_suave?: boolean
+evidencia_path?: string | null
         }
         Relationships: [
           {
