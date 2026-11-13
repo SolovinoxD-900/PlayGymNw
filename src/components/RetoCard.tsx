@@ -17,7 +17,20 @@ import { fechaLocal } from "@/lib/rachas";
 
 export function celebrar() {
   const colors = ["#E88EBA", "#F4B6CD", "#F8C8DC", "#FFFFFF"];
-  confetti({ particleCount: 140, spread: 80, origin: { y: 0.6 }, colors });
+  confetti({
+    particleCount: 140,
+    spread: 80,
+    origin: { y: 0.6 },
+    colors,
+  });
+}
+
+function normalizarNombreArchivo(nombre: string) {
+  return nombre
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-zA-Z0-9-_\.]/g, "-")
+    .toLowerCase();
 }
 
 export function RetoCard({
@@ -50,8 +63,9 @@ export function RetoCard({
     if (!file) return;
 
     const tiposPermitidos = ["image/jpeg", "image/png", "image/webp"];
+    const tipo = file.type;
 
-    if (!tiposPermitidos.includes(file.type)) {
+    if (!tiposPermitidos.includes(tipo)) {
       toast.error("Selecciona una imagen JPG, PNG o WEBP.");
       return;
     }
@@ -71,7 +85,6 @@ export function RetoCard({
     }
 
     let evidenciaPath: string | null = null;
-    let registroIniciado = false;
 
     try {
       const { data, error: authError } = await supabase.auth.getUser();
@@ -85,8 +98,9 @@ export function RetoCard({
         "image/webp": "webp",
       };
 
-      const extension = extensiones[foto.type];
-      const ruta = `${data.user.id}/${fechaLocal()}-${reto.id}-${crypto.randomUUID()}.${extension}`;
+      const extension = extensiones[foto.type] ?? "jpg";
+      const nombreBase = normalizarNombreArchivo(foto.name.replace(/\.[^/.]+$/, ""));
+      const ruta = `${data.user.id}/${fechaLocal()}-${reto.id}-${nombreBase}-${crypto.randomUUID()}.${extension}`;
 
       const { error: uploadError } = await supabase.storage
         .from("evidencias-retos")
@@ -98,7 +112,6 @@ export function RetoCard({
       if (uploadError) throw uploadError;
 
       evidenciaPath = ruta;
-      registroIniciado = true;
 
       await completar.mutateAsync({
         retoId: reto.id,
@@ -111,18 +124,14 @@ export function RetoCard({
       setFoto(null);
     } catch (error) {
       if (evidenciaPath) {
-        await supabase.storage
-          .from("evidencias-retos")
-          .remove([evidenciaPath]);
+        await supabase.storage.from("evidencias-retos").remove([evidenciaPath]);
       }
 
-      if (!registroIniciado) {
-        toast.error(
-          error instanceof Error
-            ? error.message
-            : "No se pudo subir la fotografía."
-        );
-      }
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "No se pudo completar el reto."
+      );
     }
   }
 
