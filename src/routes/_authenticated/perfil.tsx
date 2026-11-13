@@ -40,22 +40,22 @@ function Perfil() {
   async function guardar(e: React.FormEvent) {
     e.preventDefault();
     const n = nombre.trim();
-    if (n.length < 2 || n.length > 60) return toast.error("El nombre debe tener entre 2 y 60 caracteres");
+    if (n.length < 2 || n.length > 60) { toast.error("El nombre debe tener entre 2 y 60 caracteres"); return; }
     setSaving(true);
     const { error } = await supabase.from("profiles").update({ nombre: n, nivel }).eq("id", user.data!.id);
     setSaving(false);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     qc.invalidateQueries({ queryKey: ["perfil"] });
     toast.success("Perfil actualizado");
   }
 
   async function cambiarPwd(e: React.FormEvent) {
     e.preventDefault();
-    if (pwd.nueva.length < 6) return toast.error("La nueva contraseña debe tener mínimo 6 caracteres");
+    if (pwd.nueva.length < 6) { toast.error("La nueva contraseña debe tener mínimo 6 caracteres"); return; }
     setSavingPwd(true);
     const { error } = await supabase.auth.updateUser({ password: pwd.nueva, current_password: pwd.actual } as never);
     setSavingPwd(false);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     setPwd({ actual: "", nueva: "" });
     toast.success("Contraseña actualizada");
   }

@@ -15,7 +15,7 @@ function Inicio() {
   const perfil = usePerfil();
   const r = useResumen();
   if (r.loading || perfil.isLoading) return <Cargando />;
-  const frase = FRASES[indiceRetoDelDia(r.hoy, FRASES.length)];
+  const frase = FRASES[indiceRetoDelDia(r.hoy, FRASES.length)] ?? FRASES[0];
   const set = new Set(r.completados.map((c) => c.fecha));
   const semana = Array.from({ length: 7 }, (_, i) => sumarDias(r.hoy, i - 6));
   const nombre = perfil.data?.nombre?.split(" ")[0] || "amiga";

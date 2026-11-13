@@ -28,3 +28,5 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+- Play Gym data access goes through `src/lib/data.ts` (TanStack Query hooks over the browser client with RLS); streaks are always derived from completed dates in `src/lib/rachas.ts`, never stored, so they can't drift.

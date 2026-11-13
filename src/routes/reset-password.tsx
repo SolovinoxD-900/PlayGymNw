@@ -30,12 +30,12 @@ function Reset() {
 
   async function guardar(e: React.FormEvent) {
     e.preventDefault();
-    if (p.length < 6) return toast.error("Mínimo 6 caracteres");
-    if (p !== p2) return toast.error("Las contraseñas no coinciden");
+    if (p.length < 6) { toast.error("Mínimo 6 caracteres"); return; }
+    if (p !== p2) { toast.error("Las contraseñas no coinciden"); return; }
     setLoading(true);
     const { error } = await supabase.auth.updateUser({ password: p });
     setLoading(false);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success("Contraseña actualizada");
     navigate({ to: "/inicio" });
   }

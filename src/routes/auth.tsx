@@ -53,7 +53,7 @@ function AuthPage() {
   async function entrar(e: React.FormEvent) {
     e.preventDefault();
     const r = z.object({ email, password }).safeParse(f);
-    if (!r.success) return toast.error(r.error.issues[0].message);
+    if (!r.success) { toast.error(r.error.issues[0]?.message); return; }
     setLoading(true);
     const { error } = await supabase.auth.signInWithPassword(r.data);
     setLoading(false);
@@ -63,7 +63,7 @@ function AuthPage() {
   async function registrar(e: React.FormEvent) {
     e.preventDefault();
     const r = registro.safeParse(f);
-    if (!r.success) return toast.error(r.error.issues[0].message);
+    if (!r.success) { toast.error(r.error.issues[0]?.message); return; }
     setLoading(true);
     const { data, error } = await supabase.auth.signUp({
       email: r.data.email,
@@ -71,18 +71,18 @@ function AuthPage() {
       options: { emailRedirectTo: window.location.origin + "/inicio", data: { nombre: r.data.nombre } },
     });
     setLoading(false);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     if (!data.session) setEnviado("Te enviamos un correo para confirmar tu cuenta. Revisa tu bandeja (y spam).");
   }
 
   async function recuperar(e: React.FormEvent) {
     e.preventDefault();
     const r = email.safeParse(f.email);
-    if (!r.success) return toast.error(r.error.issues[0].message);
+    if (!r.success) { toast.error(r.error.issues[0]?.message); return; }
     setLoading(true);
     const { error } = await supabase.auth.resetPasswordForEmail(r.data, { redirectTo: window.location.origin + "/reset-password" });
     setLoading(false);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     setEnviado("Si el correo existe, recibirás un enlace para crear una nueva contraseña.");
   }
 

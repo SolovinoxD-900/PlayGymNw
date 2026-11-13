@@ -75,7 +75,7 @@ export function useCompletados() {
 }
 
 export function retoParaFecha(retos: Reto[], fecha: string) {
-  return retos[indiceRetoDelDia(fecha, retos.length)];
+  return retos[indiceRetoDelDia(fecha, retos.length)]!;
 }
 
 export function useResumen() {
@@ -133,7 +133,7 @@ export function useBitacora() {
 export function useGuardarEntrada() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async (e: { id?: string; contenido: string; respuestas: Record<string, string> }) => {
+    mutationFn: async (e: { id?: string | undefined; contenido: string; respuestas: Record<string, string> }) => {
       if (e.id) {
         const { error } = await supabase
           .from("bitacora")

@@ -55,8 +55,8 @@ function Bitacora() {
   }
   function onGuardar() {
     const limpio = Object.fromEntries(Object.entries(resp).map(([k, v]) => [k, v.trim().slice(0, 1000)]).filter(([, v]) => v));
-    if (!texto.trim() && Object.keys(limpio).length === 0) return toast.error("Escribe algo antes de guardar");
-    if (texto.length > MAX) return toast.error("La entrada es demasiado larga");
+    if (!texto.trim() && Object.keys(limpio).length === 0) { toast.error("Escribe algo antes de guardar"); return; }
+    if (texto.length > MAX) { toast.error("La entrada es demasiado larga"); return; }
     guardar.mutate({ id: editId, contenido: texto.trim(), respuestas: limpio }, { onSuccess: limpiar });
   }
 

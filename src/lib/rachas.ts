@@ -7,7 +7,7 @@ export function fechaLocal(d: Date = new Date()): string {
 }
 
 export function parseFecha(s: string): Date {
-  const [y, m, d] = s.split("-").map(Number);
+  const [y, m, d] = s.split("-").map(Number) as [number, number, number];
   return new Date(y, m - 1, d);
 }
 
@@ -18,7 +18,7 @@ export function sumarDias(s: string, n: number): string {
 }
 
 function diaNumero(s: string): number {
-  const [y, m, d] = s.split("-").map(Number);
+  const [y, m, d] = s.split("-").map(Number) as [number, number, number];
   return Math.round(Date.UTC(y, m - 1, d) / 86400000);
 }
 
